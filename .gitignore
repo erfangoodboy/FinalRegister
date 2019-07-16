@@ -1,0 +1,27 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/workspace.xml
+node_modules/@jimp/plugin-print/.DS_Store
+node_modules/@jimp/plugin-print/test/.DS_Store
+node_modules/@jimp/png/.DS_Store
+node_modules/mongoose/node_modules/mongodb/lib/.DS_Store
+node_modules/nodemailer/.DS_Store
+node_modules/nodemailer/lib/.DS_Store
+node_modules/npm/node_modules/copy-concurrently/README.md~
+node_modules/npm/node_modules/find-npm-prefix/test/find-prefix.js~
+node_modules/npm/node_modules/move-concurrently/README.md~
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/MSVSUtil.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/MSVSVersion.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/__init__.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/common.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/generator/__init__.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/generator/make.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/generator/ninja.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/generator/xcode.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/input.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/msvs_emulation.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/ninja_syntax.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/simple_copy.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/xcode_emulation.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/xcode_ninja.pyc
+node_modules/npm/node_modules/node-gyp/gyp/pylib/gyp/xcodeproj_file.pyc
+/uploads/
