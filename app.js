@@ -5,10 +5,13 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var userRegisterRouter = require('./routes/userRegister');
+var userRouter = require('./routes/userRouter');
+var adminRouter = require('./routes/adminRouter')
 var app = express();
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/Final', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost:27017/Final', {useNewUrlParser: true,
+    useCreateIndex: true
+});
 mongoose.set('useFindAndModify', false);
 
 // view engine setup
@@ -23,7 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/userRegister', userRegisterRouter);
+app.use('/userRouter', userRouter);
+app.use('/adminRouter' , adminRouter);
 
 
 

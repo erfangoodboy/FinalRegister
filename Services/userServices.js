@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 var {User} = require('../models/Users');
 var utils = require('../utils/functoin');
-
+const {Ticket} = require('../models/Ticket');
 var methods = {};
 
 methods.register = (email, name, password, phone, imageUrl) => {
@@ -72,7 +72,27 @@ methods.edit = (user, name, password, filename) => {
             reject({eCode: 500, eText: err});
         })
     })
-}
+};
+
+methods.sendTicket = (user, text, title , deptId) => {
+    return new Promise((resolve, reject) => {
+        let ticket = new Ticket({
+            text: text,
+            sender_id: mongoose.Types.ObjectId(user._id),
+            title: title,
+            date: new Date(),
+            deptId: deptId
+        });
+        let promise = ticket.save();
+        promise
+            .then(()=>{
+                resolve({success: true});
+            })
+            .catch((err)=>{
+                reject({eCode: 500 , eText: err}) ;
+            })
+    });
+};
 
 
 module.exports = methods;

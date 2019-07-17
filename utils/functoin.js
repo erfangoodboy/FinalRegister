@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const Jimp = require('jimp');
 const jwt = require('jsonwebtoken');
 const {User} = require('../models/Users');
+const {Admin} = require('../models/Admin');
 
 var methods = {};
 
@@ -86,6 +87,26 @@ methods.auth = async function (req, res, next) {
         req.token = token
         req.user = user
         next()
+    } catch (error) {
+        console.log(error)
+        res.status(401).send({error: 'Please authenticate!'})
+    }
+
+};
+methods.adminAuth = async function (req, res, next) {
+    try {
+        const token = req.header('x-auth');
+
+        const decoded = jwt.verify(token, 'abc123')
+
+        const admin = await Admin.findOne({_id: decoded._id, 'tokens.token': token})
+
+        if (!admin) {
+            res.status(404).send('user not found')
+        }else{
+        req.token = token
+        req.admin = admin
+        next()};
     } catch (error) {
         console.log(error)
         res.status(401).send({error: 'Please authenticate!'})
