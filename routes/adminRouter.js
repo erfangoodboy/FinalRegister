@@ -1,4 +1,4 @@
-const {Admin} =  require('../models/Admin') ;
+const {Admin} = require('../models/Admin');
 var express = require('express');
 var multer = require('multer');
 var router = express.Router();
@@ -110,12 +110,12 @@ router.post('/edit', utils.auth, upload, (req, res) => {
         })
 });
 
-router.post('/addDepartment', utils.adminAuth , (req , res)=>{
-    AdminService.addDepartment(req.admin , req.body.name , req.body.description)
-        .then(()=>{
-        res.status(200).send({success: true});
-    })
-        .catch((err)=>{
+router.post('/addDepartment', utils.adminAuth, (req, res) => {
+    AdminService.addDepartment(req.admin, req.body.name, req.body.description)
+        .then(() => {
+            res.status(200).send({success: true});
+        })
+        .catch((err) => {
             if (err.eText) {
                 if (typeof err.eText !== 'string') {
                     err.eText = err.eText.toString()
@@ -132,13 +132,13 @@ router.post('/addDepartment', utils.adminAuth , (req , res)=>{
 
 });
 
-router.post('/editDepartment' , utils.adminAuth , (req , res )=>{
-    AdminService.editDept(req.admin , req.body.name , req.body.description)
-        .then((doc)=>{
-            res.status(200).send(doc) ;
+router.post('/editDepartment', utils.adminAuth, (req, res) => {
+    AdminService.editDept(req.admin, req.body.name, req.body.description)
+        .then((doc) => {
+                res.status(200).send(doc);
             }
         )
-        .catch((err)=>{
+        .catch((err) => {
             if (err.eText) {
                 if (typeof err.eText !== 'string') {
                     err.eText = err.eText.toString()
@@ -152,8 +152,50 @@ router.post('/editDepartment' , utils.adminAuth , (req , res )=>{
                 error: err.eText.toString()
             })
         })
-    }
-)
+});
+
+router.get('/showTicket', utils.adminAuth, (req, res) => {
+    AdminService.showAllTicket()
+        .then((ticket) => {
+            res.status(200).send(ticket);
+        })
+        .catch((err) => {
+            if (err.eText) {
+                if (typeof err.eText !== 'string') {
+                    err.eText = err.eText.toString()
+                }
+            } else {
+                err.eCode = 500
+                err.eText = err
+            }
+            res.status(err.eCode).send({
+                success: false,
+                error: err.eText.toString()
+            })
+
+        })
+});
+
+router.post('/sendComment' , utils.adminAuth , (req , res ) => {
+    AdminService.sendComment(req.admin , req.body.text , req.body.ticket_id)
+        .then(()=>{
+            res.status(200).send({success: true}) ;
+        })
+        .catch((err) => {
+            if (err.eText) {
+                if (typeof err.eText !== 'string') {
+                    err.eText = err.eText.toString()
+                }
+            } else {
+                err.eCode = 500
+                err.eText = err
+            }
+            res.status(err.eCode).send({
+                success: false,
+                error: err.eText.toString()
+            })
+        })
+});
 
 module.exports = router;
 

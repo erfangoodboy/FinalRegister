@@ -1,7 +1,9 @@
 const {Admin} = require('../models/Admin');
 const {Department} = require('../models/Department');
 const mongoose = require('mongoose');
-const utils = require('../utils/functoin')
+const utils = require('../utils/functoin');
+const {Ticket} = require('../models/Ticket');
+const {Comment} = require('../models/Comment');
 var methods = {};
 methods.register = (email, name, password, phone, imageUrl) => {
     return new Promise((resolve, reject) => {
@@ -105,13 +107,46 @@ methods.editDept = (admin, name, description) => {
                 description: description
             }
         )
-            .then(()=>{
+            .then(() => {
                 resolve({success: true})
             })
-            .catch((err)=>{
-                reject({eCode: 500 , eText: err});
+            .catch((err) => {
+                reject({eCode: 500, eText: err});
             })
     })
+};
+
+methods.showAllTicket = () => {
+    return new Promise((resolve, reject) => {
+        Ticket.find()
+            .then((doc) => {
+                resolve({ticket: doc});
+            })
+            .catch((err) => {
+                reject({eCode: 500, eText: err})
+            })
+    });
+};
+
+methods.sendComment = (admin, text, ticket_id) => {
+    return new Promise((resolve, reject) => {
+        let comment = new Comment({
+            text: text,
+            role: 'admin',
+            sender_id: mongoose.Types.ObjectId(admin._id),
+            date: new Date(),
+            ticket_id: ticket_id
+        }) ;
+        let promise = comment.save() ;
+        promise
+            .then(() => {
+                resolve({status: 200}) ;
+            })
+            .catch((err) => {
+                reject({eCode: 500 , eText: err}) ;
+            })
+    })
+
 };
 
 

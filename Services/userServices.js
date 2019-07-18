@@ -3,6 +3,7 @@ const fs = require('fs');
 var {User} = require('../models/Users');
 var utils = require('../utils/functoin');
 const {Ticket} = require('../models/Ticket');
+const {Comment} = require('../models/Comment');
 var methods = {};
 
 methods.register = (email, name, password, phone, imageUrl) => {
@@ -74,7 +75,7 @@ methods.edit = (user, name, password, filename) => {
     })
 };
 
-methods.sendTicket = (user, text, title , deptId) => {
+methods.startTicket = (user, text, title , deptId) => {
     return new Promise((resolve, reject) => {
         let ticket = new Ticket({
             text: text,
@@ -92,6 +93,27 @@ methods.sendTicket = (user, text, title , deptId) => {
                 reject({eCode: 500 , eText: err}) ;
             })
     });
+};
+
+methods.sendComment = (user, text, ticket_id) => {
+    return new Promise((resolve, reject) => {
+        let comment = new Comment({
+            text: text,
+            role: 'user',
+            sender_id: mongoose.Types.ObjectId(user._id),
+            date: new Date(),
+            ticket_id: ticket_id
+        }) ;
+        let promise = comment.save() ;
+        promise
+            .then(() => {
+                resolve({status: 200}) ;
+            })
+            .catch((err) => {
+                reject({eCode: 500 , eText: err}) ;
+            })
+    })
+
 };
 
 

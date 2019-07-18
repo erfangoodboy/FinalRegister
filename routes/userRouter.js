@@ -1,11 +1,10 @@
-var express = require('express');
-var multer = require('multer');
-var router = express.Router();
-var path = require('path');
-var UserService = require('../Services/userServices');
-var shortid = require('shortid')
+const express = require('express');
+const multer = require('multer');
+const router = express.Router();
+const path = require('path');
+const UserService = require('../Services/userServices');
+const shortid = require('shortid')
 const utils = require('../utils/functoin');
-const {User} = require('../models/Users');
 
 ////// config multer
 var storage = multer.diskStorage({
@@ -13,26 +12,26 @@ var storage = multer.diskStorage({
         cb(null, 'uploads')
     },
     filename: function (req, file, cb) {
-        var fileInfo = path.parse(file.originalname)
+        let fileInfo = path.parse(file.originalname)
         let fileName = shortid.generate() + fileInfo.name + fileInfo.ext;
         cb(null, fileName)
     }
 });
 
-var imageFilter = function (req, file, callback) {
+let imageFilter = function (req, file, callback) {
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif|PNG)$/i)) {
         return callback(new Error('Only image files are allowed!'), false)
     }
     callback(null, true)
 }
 
-var uploadConfig = multer({
+let uploadConfig = multer({
     storage: storage,
     fileFilter: imageFilter,
     limits: {fileSize: 200 * 1024 * 1024}
 })
 
-var upload = uploadConfig.fields([{name: 'image', maxCount: 1}])
+let upload = uploadConfig.fields([{name: 'image', maxCount: 1}])
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -93,7 +92,6 @@ router.post('/login', (req, res) => {
     });
 });
 
-
 router.post('/edit', utils.auth, upload, (req, res) => {
     var filename = req.files['image'][0].filename;
     console.log(filename);
@@ -118,8 +116,8 @@ router.post('/edit', utils.auth, upload, (req, res) => {
         })
 });
 
-router.post('/sendTicket', utils.auth , (req, res)=>{
-    UserService.sendTicket(req.user , req.body.text , req.body.title , req.body.deptId)
+router.post('/startTicket', utils.auth , (req, res)=>{
+    UserService.startTicket(req.user , req.body.text , req.body.title , req.body.deptId)
         .then(()=>{
             res.status(200).send({success: true}) ;
         })
@@ -137,6 +135,27 @@ router.post('/sendTicket', utils.auth , (req, res)=>{
                 error: err.eText.toString()
             })
         })
-})
+});
+
+router.post('/sendComment' , utils.auth , (req , res ) => {
+    UserService.sendComment(req.user , req.body.text , req.body.ticket_id)
+        .then(()=>{
+            res.status(200).send({success: true}) ;
+        })
+        .catch((err) => {
+            if (err.eText) {
+                if (typeof err.eText !== 'string') {
+                    err.eText = err.eText.toString()
+                }
+            } else {
+                err.eCode = 500
+                err.eText = err
+            }
+            res.status(err.eCode).send({
+                success: false,
+                error: err.eText.toString()
+            })
+        })
+});
 
 module.exports = router;
