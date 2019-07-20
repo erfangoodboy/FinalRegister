@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var CommentSchema = mongoose.Schema({
+var CommentSchema = Schema({
    text:{
        type: String
    } ,
@@ -16,7 +17,7 @@ var CommentSchema = mongoose.Schema({
     },
 
     ticket_id:{
-       type: Object,
+       type: Schema.Types.ObjectId,
         require: true
     }
 });

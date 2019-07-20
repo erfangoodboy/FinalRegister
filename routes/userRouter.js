@@ -158,4 +158,27 @@ router.post('/sendComment' , utils.auth , (req , res ) => {
         })
 });
 
+router.get('/showTicket' , utils.auth , ( req , res) => {
+    var page = parseInt(req.query.page);
+    var size = parseInt(req.query.size);
+   UserService.showTicket(req.user , page , size  )
+       .then((comments) => {
+           res.status(200).send(comments)
+       })
+       .catch((err) => {
+           if (err.eText) {
+               if (typeof err.eText !== 'string') {
+                   err.eText = err.eText.toString()
+               }
+           } else {
+               err.eCode = 500
+               err.eText = err
+           }
+           res.status(err.eCode).send({
+               success: false,
+               error: err.eText.toString()
+           })
+       })
+});
+
 module.exports = router;

@@ -93,6 +93,7 @@ methods.auth = async function (req, res, next) {
     }
 
 };
+
 methods.adminAuth = async function (req, res, next) {
     try {
         const token = req.header('x-auth');
@@ -102,7 +103,7 @@ methods.adminAuth = async function (req, res, next) {
         const admin = await Admin.findOne({_id: decoded._id, 'tokens.token': token})
 
         if (!admin) {
-            res.status(404).send('user not found')
+            res.status(404).send('admin not found')
         }else{
         req.token = token
         req.admin = admin

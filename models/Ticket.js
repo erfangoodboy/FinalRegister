@@ -4,8 +4,9 @@ const mongoose = require('mongoose') ;
 mongoose.plugin(schema => {
     schema.options.usePushEach = true
 });
+const Schema = mongoose.Schema;
 
-var TicketSchema = new mongoose.Schema({
+var TicketSchema = new Schema({
     text: {
         type: String ,
         require: true
@@ -22,7 +23,7 @@ var TicketSchema = new mongoose.Schema({
         type: Date
     },
     deptId:{
-        type: String,
+        type: Schema.Types.ObjectId,
         require: true
     }
 

@@ -116,5 +116,28 @@ methods.sendComment = (user, text, ticket_id) => {
 
 };
 
+methods.showTicket = (user, page , size)=>{
+    return new Promise((resolve , reject) => {
+
+        Ticket.aggregate()
+            .lookup({
+                from : 'comments',
+                localField: '_id',
+                foreignField: 'ticket_id',
+                as: 'comments'
+            })
+            .match({sender_id: mongoose.Types.ObjectId(user._id)})
+
+            .sort({date: 1})
+            .skip(size * (page - 1))
+            .limit(size)
+            .then((comments) =>{
+                resolve(comments);
+            })
+            .catch((err) =>{
+                reject({eCode:500 , eText: err}) ;
+            })
+    })
+};
 
 module.exports = methods;
