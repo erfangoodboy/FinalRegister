@@ -98,7 +98,7 @@ methods.adminAuth = async function (req, res, next) {
     try {
         const token = req.header('x-auth');
 
-        const decoded = jwt.verify(token, 'abc123')
+        const decoded = jwt.verify(token, 'abc123');
 
         const admin = await Admin.findOne({_id: decoded._id, 'tokens.token': token})
 

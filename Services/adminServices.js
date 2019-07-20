@@ -170,7 +170,7 @@ methods.showTicketAndComment = (filterDept , page , size) => {
                     as: 'comments'
                 })
                 .sort({date: 1})
-                .skip(size * (page - 1))
+                .skip(size * (page -1))
                 .limit(size)
                 .then((comments) => {
                     resolve(comments);

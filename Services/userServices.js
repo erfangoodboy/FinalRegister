@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
-var {User} = require('../models/Users');
-var utils = require('../utils/functoin');
+const {User} = require('../models/Users');
+const utils = require('../utils/functoin');
 const {Ticket} = require('../models/Ticket');
 const {Comment} = require('../models/Comment');
 var methods = {};
 
 methods.register = (email, name, password, phone, imageUrl) => {
     return new Promise((resolve, reject) => {
-        var body = {
+        let body = {
             email: email,
             name: name,
             password: password,

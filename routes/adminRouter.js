@@ -86,7 +86,7 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.post('/editProfile', utils.auth, upload, (req, res) => {
+router.post('/editProfile', utils.adminAuth, upload, (req, res) => {
     var filename = req.files['image'][0].filename;
     console.log(filename);
 
