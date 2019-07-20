@@ -116,7 +116,7 @@ router.post('/edit', utils.auth, upload, (req, res) => {
         })
 });
 
-router.post('/startTicket', utils.auth , (req, res)=>{
+router.post('/ticket/new', utils.auth , (req, res)=>{
     UserService.startTicket(req.user , req.body.text , req.body.title , req.body.deptId)
         .then(()=>{
             res.status(200).send({success: true}) ;
@@ -137,7 +137,7 @@ router.post('/startTicket', utils.auth , (req, res)=>{
         })
 });
 
-router.post('/sendComment' , utils.auth , (req , res ) => {
+router.post('/comment/sent' , utils.auth , (req , res ) => {
     UserService.sendComment(req.user , req.body.text , req.body.ticket_id)
         .then(()=>{
             res.status(200).send({success: true}) ;
@@ -179,6 +179,31 @@ router.get('/showTicket' , utils.auth , ( req , res) => {
                error: err.eText.toString()
            })
        })
+});
+
+router.get('/showComment', utils.auth, (req, res) => {
+    var page = parseInt(req.query.page);
+    var size = parseInt(req.query.size);
+
+    UserService.showComment(req.headers.ticket_id  , page , size )
+        .then((comment) => {
+            res.status(200).send({comment: comment})
+        })
+        .catch((err) => {
+            if (err.eText) {
+                if (typeof err.eText !== 'string') {
+                    err.eText = err.eText.toString()
+                }
+            } else {
+                err.eCode = 500
+                err.eText = err
+            }
+            res.status(err.eCode).send({
+                success: false,
+                error: err.eText.toString()
+            })
+        })
+
 });
 
 module.exports = router;

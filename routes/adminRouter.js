@@ -155,7 +155,9 @@ router.post('/editDepartment', utils.adminAuth, (req, res) => {
 });
 
 router.get('/showTicket', utils.adminAuth, (req, res) => {
-    AdminService.showAllTicket()
+    var page = parseInt(req.query.page);
+    var size = parseInt(req.query.size);
+    AdminService.showTicket(req.headers.filter , page , size)
         .then((ticket) => {
             res.status(200).send(ticket);
         })
@@ -197,13 +199,13 @@ router.post('/sendComment', utils.adminAuth, (req, res) => {
         })
 });
 
-router.get('/showTicketAndComment', utils.adminAuth, (req, res) => {
+router.get('/showComment', utils.adminAuth, (req, res) => {
      var page = parseInt(req.query.page);
       var size = parseInt(req.query.size);
 
-    AdminService.showTicketAndComment(req.headers.filter , page , size )
-            .then((ticket) => {
-                res.status(200).send({tickets: ticket})
+    AdminService.showComment(req.headers.ticket_id  , page , size )
+            .then((comment) => {
+                res.status(200).send({comment: comment})
             })
             .catch((err) => {
                 if (err.eText) {

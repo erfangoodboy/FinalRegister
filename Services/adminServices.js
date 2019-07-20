@@ -89,8 +89,8 @@ methods.addDepartment = (admin, deptName, description) => {
                         description: description,
                         create: mongoose.Types.ObjectId(admin._id)
                     });
-                    department.save().then(() => {
-                        resolve({status: 200})
+                    department.save().then(department => {
+                        resolve(department)
                     }).catch((err) => {
                         reject({eCode: 500, eText: err});
                     })
@@ -100,16 +100,16 @@ methods.addDepartment = (admin, deptName, description) => {
     })
 };
 
-methods.editDept = ( name, description , dept_name) => {
+methods.editDept = (name, description, deptId) => {
     return new Promise((resolve, reject) => {
-        Department.updateOne({_id : dept_name},
+        Department.updateOne({_id: deptId},
             {
                 name: name,
                 description: description
             }
         )
             .then(() => {
-                resolve({success: true})
+                resolve();
             })
             .catch((err) => {
                 reject({eCode: 500, eText: err});
@@ -117,15 +117,47 @@ methods.editDept = ( name, description , dept_name) => {
     })
 };
 
-methods.showAllTicket = () => {
+methods.showTicket = (filter, page, size) => {
     return new Promise((resolve, reject) => {
-        Ticket.find()
-            .then((doc) => {
-                resolve({ticket: doc});
-            })
-            .catch((err) => {
-                reject({eCode: 500, eText: err})
-            })
+        if (filter == undefined) {
+            Ticket.aggregate()
+                .sort({date: 1})
+                .skip(size * (page - 1))
+                .limit(size)
+                .lookup({
+                    from: 'departments',
+                    localField: 'deptId',
+                    foreignField: '_id',
+                    as: 'department'
+                })
+                .then((ticket) => {
+                    resolve(ticket);
+                })
+                .catch((err) => {
+                    reject({eCode: 500, eText: err});
+                })
+        } else {
+            Ticket.aggregate()
+                .sort({date: 1})
+                .skip(size * (page - 1))
+                .limit(size)
+                .lookup({
+                    from: 'departments',
+                    localField: 'deptId',
+                    foreignField: '_id',
+                    as: 'department'
+                })
+                .match({deptId: mongoose.Types.ObjectId(filter)})
+
+                .then((ticket) => {
+                    resolve(ticket);
+                })
+                .catch((err) => {
+                    reject({eCode: 500, eText: err});
+                })
+
+        }
+
     });
 };
 
@@ -138,11 +170,9 @@ methods.sendComment = (admin, text, ticket_id) => {
             date: new Date(),
             ticket_id: ticket_id
         });
-        let promise = comment.save();
-        promise
-            .then(() => {
-                resolve({status: 200});
-            })
+        comment.save().then(() => {
+            resolve({status: 200});
+        })
             .catch((err) => {
                 reject({eCode: 500, eText: err});
             })
@@ -150,62 +180,19 @@ methods.sendComment = (admin, text, ticket_id) => {
 
 };
 
-methods.showTicketAndComment = (filterDept , page , size) => {
+methods.showComment = (ticket_id, page, size) => {
     return new Promise((resolve, reject) => {
-        let filter = filterDept;
-
-        if (filter == undefined) {
-
-            Ticket.aggregate()
-                .lookup({
-                    from: 'departments',
-                    localField: 'deptId',
-                    foreignField: '_id',
-                    as: 'department'
-                })
-                .lookup({
-                    from: 'comments',
-                    localField: '_id',
-                    foreignField: 'ticket_id',
-                    as: 'comments'
-                })
-                .sort({date: 1})
-                .skip(size * (page -1))
-                .limit(size)
-                .then((comments) => {
-                    resolve(comments);
-                })
-                .catch((err) => {
-                    reject({eCode: 500, eText: err});
-                })
-
-        } else {
-
-            Ticket.aggregate()
-                .lookup({
-                    from: 'departments',
-                    localField: 'deptId',
-                    foreignField: '_id',
-                    as: 'department'
-                })
-                .lookup({
-                    from: 'comments',
-                    localField: '_id',
-                    foreignField: 'ticket_id',
-                    as: 'comments'
-                })
-                .match({deptId: mongoose.Types.ObjectId(filter)})
-
-                .sort({date: 1})
-                .skip(size * (page - 1))
-                .limit(size)
-                .then((comments) => {
-                    resolve(comments);
-                })
-                .catch((err) => {
-                    reject({eCode: 500, eText: err});
-                })
-        }
+        Comment.aggregate()
+            .match({ticket_id: mongoose.Types.ObjectId(ticket_id)})
+            .sort({date: 1})
+            .skip(size * (page - 1))
+            .limit(size)
+            .then((comments) => {
+                resolve(comments);
+            })
+            .catch((err) => {
+                reject({eCode: 500, eText: err});
+            })
     })
 };
 
