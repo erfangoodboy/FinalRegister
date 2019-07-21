@@ -2,6 +2,7 @@ const {Admin} = require('../models/Admin');
 const {Department} = require('../models/Department');
 const mongoose = require('mongoose');
 const utils = require('../utils/functoin');
+const bcrypt = require('bcryptjs');
 const {Ticket} = require('../models/Ticket');
 const {Comment} = require('../models/Comment');
 var methods = {};
@@ -45,22 +46,33 @@ methods.register = (email, name, password, phone, imageUrl) => {
     })
 };
 
-methods.login = (req, res) => {
+methods.login = (email , password) => {
     return new Promise((resolve, reject) => {
-        Admin.findByCredentials(req.body.email, req.body.password)
-            .then((admin) => {
-                    return admin.generateAuthToken()
-                        .then((token) => {
-                            // res.header('x-auth', token).send({status: 200});
-                            resolve({success: true, token: token});
-                        }).catch((err) => {
-                            reject({eCode: 500, eText: err});
-                        })
-                }
-            ).catch((err) => {
-            reject({eCode: 500, eText: err});
+        Admin.findOne({email: email} , (err , exist) =>{
+            if (err){
+                reject({eCode: 500 , eText: err})
+            }
+            if (!exist){
+                reject({eCode: 404 , eText: 'admin not exist'}) ;
+            } else {
+                bcrypt.compare(password , exist.password , (err , res)=>{
+                    if (err){
+                        reject({eCode: 500 , eText: err}) ;
+                    }
+                    if (!res){
+                        reject({eCode: 400 , eText: 'password is not correct'}) ;
+                    }else {
+                        exist.generateAuthToken()
+                            .then((token) =>{
+                                resolve(token) ;
+                            })
+                            .catch((err)=>{
+                                reject({eCode:500 , eText: err}) ;
+                            })
+                    }
+                })
+            }
         })
-
     })
 };
 

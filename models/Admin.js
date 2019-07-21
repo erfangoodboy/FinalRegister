@@ -45,7 +45,6 @@ var AdminSchema = new mongoose.Schema({
     }]
 });
 
-
 AdminSchema.pre('save', function (next) {
     let admin = this;
 
@@ -60,45 +59,24 @@ AdminSchema.pre('save', function (next) {
 
 });
 
-AdminSchema.methods.comparePassword = function (passw, cb) {
-    bcrypt.compare(passw, this.password, function (err, isMatch) {
-        if (err) {
-            return cb(err)
-        }
-        return cb(null, isMatch)
-    })
-};
-
-AdminSchema.statics.findByCredentials = function (email, password) {
-    var Admin = this;
-    return new Promise((resolve, reject) => {
-        // Use bcrypt.compare to compare password and user.password
-        Admin.findOne({email: email})
-            .then((admin) => {
-                if (!admin) {
-                    return reject({status: 404});
-                } else {
-                    bcrypt.compare(password, admin.password, (err, res) => {
-                        if (res) {
-                            resolve(admin);
-                        } else {
-                            reject({status: 401});
-                        }
-                    });
-                }
-            });
-    });
-};
-
 AdminSchema.methods.generateAuthToken = function () {
-    let admin = this;
-    let access = 'auth';
-    let token = jwt.sign({_id: admin._id.toString(), access}, 'abc123').toString();
-    admin.tokens = [{access, token}];
+    return new Promise((resolve , reject) =>{
 
-    return admin.save().then(() => {
-        return token;
-    });
+        let admin = this;
+        let access = 'auth';
+        let token = jwt.sign({_id: admin._id.toString(), access}, 'abc123').toString();
+        admin.tokens = [{access, token}];
+
+        return admin.save()
+            .then(() => {
+            resolve(token) ;
+        })
+            .catch((err) =>{
+                reject({eCode:500 , eText: err}) ;
+            })
+            ;
+    })
+
 };
 
 

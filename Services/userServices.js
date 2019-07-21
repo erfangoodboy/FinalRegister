@@ -47,25 +47,7 @@ methods.register = (email, name, password, phone, imageUrl) => {
     })
 };
 
-methods.login = (email, password) => {
-    return new Promise((resolve, reject) => {
-        User.findByCredentials(email, password)
-            .then((user) => {
-                    user.generateAuthToken()
-                        .then((token) => {
-                            resolve(token);
-                        }).catch((err) => {
-                        reject({eCode: 500, eText: err});
-                    })
-                }
-            ).catch((err) => {
-            reject({eCode: 500, eText: err});
-        })
-
-    })
-};
-
-methods.login1 = (email , password)=>{
+methods.login = (email , password)=>{
     return new Promise((resolve , reject) => {
         User.findOne({email: email} , (err , exist) =>{
             if (err){
@@ -94,7 +76,6 @@ methods.login1 = (email , password)=>{
         })
     })
 }
-
 
 methods.edit = (user, name, password, filename) => {
     return new Promise((resolve, reject) => {

@@ -74,7 +74,7 @@ router.post('/register', upload, (req, res) => {
 });
 
 router.post('/login' , (req ,res)=>{
-    UserService.login1(req.body.email , req.body.password)
+    UserService.login(req.body.email , req.body.password)
         .then((token) =>{
             res.setHeader('x-auth' , token) ;
             res.status(200).send({success: true}) ;
