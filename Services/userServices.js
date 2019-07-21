@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const fs = require('fs');
+const bcrypt = require('bcryptjs') ;
 const {User} = require('../models/Users');
 const utils = require('../utils/functoin');
 const {Ticket} = require('../models/Ticket');
@@ -46,16 +47,16 @@ methods.register = (email, name, password, phone, imageUrl) => {
     })
 };
 
-methods.login = (email , password) => {
+methods.login = (email, password) => {
     return new Promise((resolve, reject) => {
-        User.findByCredentials(email ,password)
+        User.findByCredentials(email, password)
             .then((user) => {
-                    return user.generateAuthToken()
+                    user.generateAuthToken()
                         .then((token) => {
                             resolve(token);
                         }).catch((err) => {
-                            reject({eCode: 500, eText: err});
-                        })
+                        reject({eCode: 500, eText: err});
+                    })
                 }
             ).catch((err) => {
             reject({eCode: 500, eText: err});
@@ -63,6 +64,37 @@ methods.login = (email , password) => {
 
     })
 };
+
+methods.login1 = (email , password)=>{
+    return new Promise((resolve , reject) => {
+        User.findOne({email: email} , (err , exist) =>{
+            if (err){
+                reject({eCode: 500 , eText: err})
+            }
+            if (!exist){
+                reject({eCode: 404 , eText: 'user not exist'}) ;
+            } else {
+                bcrypt.compare(password , exist.password , (err , res)=>{
+                    if (err){
+                        reject({eCode: 500 , eText: err}) ;
+                    }
+                    if (!res){
+                        reject({eCode: 400 , eText: 'password is not correct'}) ;
+                    }else {
+                        exist.generateAuthToken()
+                            .then((token) =>{
+                                resolve(token) ;
+                            })
+                            .catch((err)=>{
+                                reject({eCode:500 , eText: err}) ;
+                            })
+                    }
+                })
+            }
+        })
+    })
+}
+
 
 methods.edit = (user, name, password, filename) => {
     return new Promise((resolve, reject) => {

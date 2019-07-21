@@ -49,7 +49,7 @@ var UserSchema = new mongoose.Schema({
 UserSchema.pre('save', function (next) {
     var user = this;
 
-    if (this.password &&this.isModified('password') || this.isNew) {
+    if (this.password && this.isModified('password') || this.isNew) {
         let hash = bcrypt.hashSync(user.password, 10);
         user.password = hash;
         next();
@@ -60,48 +60,26 @@ UserSchema.pre('save', function (next) {
 
 });
 
-UserSchema.methods.comparePassword = function (passw, cb) {
-    bcrypt.compare(passw, this.password, function (err, isMatch) {
-        if (err) {
-            return cb(err)
-        }
-        return cb(null, isMatch)
-    })
-};
-
-UserSchema.statics.findByCredentials = function (email, password) {
-    var User = this;
-    return new Promise((resolve, reject) => {
-        // Use bcrypt.compare to compare password and user.password
-        User.findOne({email: email})
-            .then((user) => {
-                if (!user) {
-                     reject({eCode: 404 , eText: 'user not found'});
-                } else {
-                    bcrypt.compare(password, user.password, (err, res) => {
-                        if (res) {
-                            resolve(user);
-                        } else {
-                            reject({eCode: 400 , eText: 'password is not correct'});
-                        }
-                    });
-                }
-            });
-    });
-};
-
 UserSchema.methods.generateAuthToken = function () {
-    var user = this;
-    var access = 'auth';
-    var token = jwt.sign({_id: user._id.toString(), access}, 'abc123').toString();
-    user.tokens = [{access, token}];
 
-    return user.save().then(() => {
-        return token;
+    return new Promise((resolve, reject) => {
+        var user = this;
+        var access = 'auth';
+        var token = jwt.sign({_id: user._id.toString(), access}, 'abc123').toString();
+        user.tokens = [{access, token}];
+
+        return user.save()
+            .then(() => {
+                resolve(token);
+
+            })
+            .catch((err) => {
+                reject({eCode: 500, eText: err});
+            })
+
     })
+
 };
-
-
 
 var User = mongoose.model('User', UserSchema);
 

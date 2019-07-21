@@ -73,24 +73,26 @@ router.post('/register', upload, (req, res) => {
 
 });
 
-router.post('/login', (req, res) => {
-    UserService.login(req.body.email, req.body.password).then((token) => {
-        res.setHeader('x-auth' , token)
-        res.status(200).send({success: true });
-    }).catch((err) => {
-        if (err.eText) {
-            if (typeof err.eText !== 'string') {
-                err.eText = err.eText.toString()
-            }
-        } else {
-            err.eCode = 500
-            err.eText = err
-        }
-        res.status(err.eCode).send({
-            success: false,
-            error: err.eText.toString()
+router.post('/login' , (req ,res)=>{
+    UserService.login1(req.body.email , req.body.password)
+        .then((token) =>{
+            res.setHeader('x-auth' , token) ;
+            res.status(200).send({success: true}) ;
         })
-    });
+        .catch((err)=>{
+            if (err.eText) {
+                if (typeof err.eText !== 'string') {
+                    err.eText = err.eText.toString()
+                }
+            } else {
+                err.eCode = 500
+                err.eText = err
+            }
+            res.status(err.eCode).send({
+                success: false,
+                error: err.eText.toString()
+            })
+        })
 });
 
 router.post('/edit', utils.auth, upload, (req, res) => {
@@ -206,5 +208,6 @@ router.get('/showComment', utils.auth, (req, res) => {
         })
 
 });
+
 
 module.exports = router;
