@@ -46,14 +46,13 @@ methods.register = (email, name, password, phone, imageUrl) => {
     })
 };
 
-methods.login = (req, res) => {
+methods.login = (email , password) => {
     return new Promise((resolve, reject) => {
-        User.findByCredentials(req.body.email, req.body.password)
+        User.findByCredentials(email ,password)
             .then((user) => {
                     return user.generateAuthToken()
                         .then((token) => {
-                            res.header('x-auth', token).send({status: 200});
-                            resolve();
+                            resolve(token);
                         }).catch((err) => {
                             reject({eCode: 500, eText: err});
                         })

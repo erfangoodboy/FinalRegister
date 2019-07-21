@@ -76,13 +76,13 @@ UserSchema.statics.findByCredentials = function (email, password) {
         User.findOne({email: email})
             .then((user) => {
                 if (!user) {
-                    return reject({status: 404});
+                     reject({eCode: 404 , eText: 'user not found'});
                 } else {
                     bcrypt.compare(password, user.password, (err, res) => {
                         if (res) {
                             resolve(user);
                         } else {
-                            reject({status: 401});
+                            reject({eCode: 400 , eText: 'password is not correct'});
                         }
                     });
                 }
@@ -98,7 +98,7 @@ UserSchema.methods.generateAuthToken = function () {
 
     return user.save().then(() => {
         return token;
-    });
+    })
 };
 
 

@@ -5,6 +5,8 @@ const Jimp = require('jimp');
 const jwt = require('jsonwebtoken');
 const {User} = require('../models/Users');
 const {Admin} = require('../models/Admin');
+const {Ticket} = require('../models/Ticket');
+const {Comment} = require('../models/Comment');
 
 var methods = {};
 
@@ -104,10 +106,12 @@ methods.adminAuth = async function (req, res, next) {
 
         if (!admin) {
             res.status(404).send('admin not found')
-        }else{
-        req.token = token
-        req.admin = admin
-        next()};
+        } else {
+            req.token = token
+            req.admin = admin
+            next()
+        }
+        ;
     } catch (error) {
         console.log(error)
         res.status(401).send({error: 'Please authenticate!'})
@@ -121,11 +125,11 @@ methods.updateProfile = (user, name, password, filename) => {
             name: name, password: password, imageUrl: filename
         })
             .then((doc) => {
-                fs.unlinkSync('uploads/' + user.imageUrl , (err , doc)=>{
-                    if (err){
-                        console.log('I can`t unlink file' , err);
+                fs.unlinkSync('uploads/' + user.imageUrl, (err, doc) => {
+                    if (err) {
+                        console.log('I can`t unlink file', err);
                     } else {
-                        console.log('removed' , doc);
+                        console.log('removed', doc);
                     }
                 })
                 resolve({status: 200});

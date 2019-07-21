@@ -74,8 +74,9 @@ router.post('/register', upload, (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-    UserService.login(req, res).then(() => {
-        res.status(200).send({status: 200});
+    UserService.login(req.body.email, req.body.password).then((token) => {
+        res.setHeader('x-auth' , token)
+        res.status(200).send({success: true });
     }).catch((err) => {
         if (err.eText) {
             if (typeof err.eText !== 'string') {
