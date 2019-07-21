@@ -102,18 +102,28 @@ methods.addDepartment = (admin, deptName, description) => {
 
 methods.editDept = (name, description, deptId) => {
     return new Promise((resolve, reject) => {
-        Department.updateOne({_id: deptId},
-            {
-                name: name,
-                description: description
+        Department.findOne({_id: mongoose.Types.ObjectId(deptId)}, (err, exist) => {
+            if (err) {
+                reject({eCode: 500, eText: err})
             }
-        )
-            .then(() => {
-                resolve();
-            })
-            .catch((err) => {
-                reject({eCode: 500, eText: err});
-            })
+            if (!exist) {
+                reject({eCode: 400, eText: 'department is not valid'});
+            } else {
+
+                Department.updateOne({_id: deptId},
+                    {
+                        name: name,
+                        description: description
+                    }
+                )
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch((err) => {
+                        reject({eCode: 500, eText: err});
+                    })
+            }
+        })
     })
 };
 
@@ -137,25 +147,33 @@ methods.showTicket = (filter, page, size) => {
                     reject({eCode: 500, eText: err});
                 })
         } else {
-            Ticket.aggregate()
-                .sort({date: 1})
-                .skip(size * (page - 1))
-                .limit(size)
-                .lookup({
-                    from: 'departments',
-                    localField: 'deptId',
-                    foreignField: '_id',
-                    as: 'department'
-                })
-                .match({deptId: mongoose.Types.ObjectId(filter)})
+            Department.findOne({_id: mongoose.Types.ObjectId(filter)}, (err, exist) => {
+                if (err) {
+                    reject({eCode: 500, eText: err})
+                }
+                if (!exist) {
+                    reject({eCode: 400, eText: 'department is not valid'});
+                } else {
+                    Ticket.aggregate()
+                        .sort({date: 1})
+                        .skip(size * (page - 1))
+                        .limit(size)
+                        .lookup({
+                            from: 'departments',
+                            localField: 'deptId',
+                            foreignField: '_id',
+                            as: 'department'
+                        })
+                        .match({deptId: mongoose.Types.ObjectId(filter)})
 
-                .then((ticket) => {
-                    resolve(ticket);
-                })
-                .catch((err) => {
-                    reject({eCode: 500, eText: err});
-                })
-
+                        .then((ticket) => {
+                            resolve(ticket);
+                        })
+                        .catch((err) => {
+                            reject({eCode: 500, eText: err});
+                        })
+                }
+            })
         }
 
     });
@@ -163,36 +181,59 @@ methods.showTicket = (filter, page, size) => {
 
 methods.sendComment = (admin, text, ticket_id) => {
     return new Promise((resolve, reject) => {
-        let comment = new Comment({
-            text: text,
-            role: 'admin',
-            sender_id: mongoose.Types.ObjectId(admin._id),
-            date: new Date(),
-            ticket_id: ticket_id
-        });
-        comment.save().then(() => {
-            resolve({status: 200});
+        Ticket.findOne({_id: mongoose.Types.ObjectId(ticket_id)}, (err, exist) => {
+            if (err) {
+                reject({eCode: 500, eText: err})
+            }
+            if (!exist) {
+                reject({eCode: 400, eText: 'ticket is not valid'});
+            } else {
+
+                let comment = new Comment({
+                    text: text,
+                    role: 'admin',
+                    sender_id: mongoose.Types.ObjectId(admin._id),
+                    date: new Date(),
+                    ticket_id: ticket_id
+                });
+                comment.save().then(() => {
+                    resolve({status: 200});
+                })
+                    .catch((err) => {
+                        reject({eCode: 500, eText: err});
+                    })
+            }
         })
-            .catch((err) => {
-                reject({eCode: 500, eText: err});
-            })
     })
 
 };
 
 methods.showComment = (ticket_id, page, size) => {
     return new Promise((resolve, reject) => {
-        Comment.aggregate()
-            .match({ticket_id: mongoose.Types.ObjectId(ticket_id)})
-            .sort({date: 1})
-            .skip(size * (page - 1))
-            .limit(size)
-            .then((comments) => {
-                resolve(comments);
-            })
-            .catch((err) => {
-                reject({eCode: 500, eText: err});
-            })
+
+        Ticket.findOne({_id: mongoose.Types.ObjectId(ticket_id)}, (err, exist) => {
+            if (err) {
+                reject({eCode: 500, eText: err})
+            }
+            if (!exist) {
+                reject({eCode: 400, eText: 'ticket is not valid'});
+
+            } else {
+                Comment.aggregate()
+                    .match({ticket_id: mongoose.Types.ObjectId(ticket_id)})
+                    .sort({date: 1})
+                    .skip(size * (page - 1))
+                    .limit(size)
+                    .then((comments) => {
+                        resolve(comments);
+                    })
+                    .catch((err) => {
+                        reject({eCode: 500, eText: err});
+                    })
+            }
+        })
+
+
     })
 };
 
