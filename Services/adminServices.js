@@ -32,9 +32,7 @@ methods.register = (email, name, password, phone, imageUrl) => {
                 }).then(() => {
                     utils.sendMail();
                 }).then(() => {
-                    resolve({
-                        status: 200
-                    });
+                    resolve();
                 })
                     .catch((err) => {
                         reject({eCode: 500, eText: err})
@@ -80,7 +78,7 @@ methods.editProfile = (user, name, password, filename) => {
     return new Promise((resolve, reject) => {
 
         utils.updateProfile(user, name, password, filename).then((doc) => {
-            resolve({status: 200});
+            resolve();
         }).catch((err) => {
             reject({eCode: 500, eText: err});
         })
@@ -209,7 +207,7 @@ methods.sendComment = (admin, text, ticket_id) => {
                     ticket_id: ticket_id
                 });
                 comment.save().then(() => {
-                    resolve({status: 200});
+                    resolve();
                 })
                     .catch((err) => {
                         reject({eCode: 500, eText: err});

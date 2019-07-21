@@ -46,9 +46,7 @@ router.post('/register', upload, (req, res) => {
         photo
     ).then((admin) => {
 
-        res.status(200).send({
-            status: 200
-        });
+        res.status(200).send({success: true});
 
     }).catch((err) => {
         if (err.eText) {
@@ -95,7 +93,7 @@ router.post('/editProfile', utils.adminAuth, upload, (req, res) => {
 
     AdminService.editProfile(req.user, req.body.name, req.body.password, filename)
         .then((doc) => {
-            res.status(200).send({status: 200})
+            res.status(200).send({success: true})
         })
         .catch((err) => {
             if (err.eText) {

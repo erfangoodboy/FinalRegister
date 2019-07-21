@@ -52,9 +52,7 @@ router.post('/register', upload, (req, res) => {
         photo
     ).then((user) => {
 
-        res.status(200).send({
-            status: 200
-        });
+        res.status(200).send({success: true});
 
     }).catch((err) => {
         if (err.eText) {
@@ -101,7 +99,7 @@ router.post('/edit', utils.auth, upload, (req, res) => {
 
     UserService.edit(req.user, req.body.name, req.body.password, filename)
         .then((doc) => {
-            res.status(200).send({status: 200})
+            res.status(200).send({success: true})
         })
         .catch((err) => {
             if (err.eText) {
@@ -190,7 +188,7 @@ router.get('/showComment', utils.auth, (req, res) => {
 
     UserService.showComment(req.headers.ticket_id  , page , size )
         .then((comment) => {
-            res.status(200).send({comment: comment})
+            res.status(200).send({success: true,comment: comment})
         })
         .catch((err) => {
             if (err.eText) {

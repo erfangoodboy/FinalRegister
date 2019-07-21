@@ -33,9 +33,7 @@ methods.register = (email, name, password, phone, imageUrl) => {
                 }).then(() => {
                     utils.sendMail();
                 }).then(() => {
-                    resolve({
-                        status: 200
-                    });
+                    resolve();
                 })
                     .catch((err) => {
                         reject({eCode: 500, eText: err})
@@ -81,7 +79,7 @@ methods.edit = (user, name, password, filename) => {
     return new Promise((resolve, reject) => {
 
         utils.updateProfile(user, name, password, filename).then((doc) => {
-            resolve({status: 200});
+            resolve();
         }).catch((err) => {
             reject({eCode: 500, eText: err});
         })
@@ -107,7 +105,7 @@ methods.startTicket = (user, text, title, deptId) => {
                 let promise = ticket.save();
                 promise
                     .then(() => {
-                        resolve({success: true});
+                        resolve();
                     })
                     .catch((err) => {
                         reject({eCode: 500, eText: err});
@@ -136,7 +134,7 @@ methods.sendComment = (user, text, ticket_id) => {
                     let promise = comment.save();
                     promise
                         .then(() => {
-                            resolve({status: 200});
+                            resolve();
                         })
                         .catch((err) => {
                             reject({eCode: 500, eText: err});
